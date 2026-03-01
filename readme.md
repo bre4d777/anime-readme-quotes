@@ -14,19 +14,19 @@ Paste into any `README.md` or Markdown file. The card refreshes on every page lo
 
 ```md
 <!-- random quote -->
-![Anime Quote](https://your-domain.vercel.app/api)
+![Anime Quote](https://animequotes.uwuify.space/api)
 
 <!-- filter by anime -->
-![Anime Quote](https://your-domain.vercel.app/api?anime=Naruto)
+![Anime Quote](https://animequotes.uwuify.space/api?anime=Naruto)
 
 <!-- filter by character -->
-![Anime Quote](https://your-domain.vercel.app/api?character=Spike)
+![Anime Quote](https://animequotes.uwuify.space/api?character=Spike)
 
 <!-- specific theme -->
-![Anime Quote](https://your-domain.vercel.app/api?theme=tokyo_night)
+![Anime Quote](https://animequotes.uwuify.space/api?theme=tokyo_night)
 
 <!-- custom quote -->
-![Anime Quote](https://your-domain.vercel.app/api?quote=Your+quote+here&author=You&anime_name=Life)
+![Anime Quote](https://animequotes.uwuify.space/api?quote=Your+quote+here&author=You&anime_name=Life)
 ```
 
 ---
