@@ -209,7 +209,7 @@ Returns an array of all valid theme key strings. No params.
 
 1. Fork this repo
 2. Deploy to [Vercel](https://vercel.com)
-3. Replace `[animequotes.uwuify.space](animequotes.uwuify.space)` with your deployment URL or Simply Visit your deployment to generate card
+3. Replace `animequotes.uwuify.space` with your deployment URL or Simply Visit your deployment to generate card
 4. yes the html is somewhat ai generated 
 
 ---
