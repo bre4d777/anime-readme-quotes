@@ -1,0 +1,12 @@
+{
+  "name": "anime-readme-quotes",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "devDependencies": {
+    "vercel": "^50.20.4"
+  }
+}

@@ -5,3 +5,12 @@
 !main.json
 !.gitignore
 !anilist_cache.json
+!vercel.json
+!package.json
+!api/
+!api/**
+!public/
+!public/**
+!readme.md
+.vercel
+.env*.local

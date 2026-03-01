@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Anime Quote Cards — GitHub README Widget</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0a0a0a;
+  --surface:   #111111;
+  --surface2:  #191919;
+  --border:    #1e1e1e;
+  --border2:   #2a2a2a;
+  --text:      #efefef;
+  --muted:     #444444;
+  --muted2:    #707070;
+  --accent:    #b8ff57;
+  --accent-d:  rgba(184,255,87,0.07);
+  --radius:    10px;
+  --mono:      'JetBrains Mono', monospace;
+  --sans:      'Syne', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none; z-index: 0;
+}
+
+.wrap {
+  position: relative; z-index: 1;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* ─── NAV ─── */
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border2);
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--sans);
+  font-weight: 800; font-size: 16px;
+  letter-spacing: -.01em; color: var(--text); text-decoration: none;
+}
+.logo-mark {
+  width: 30px; height: 30px; background: var(--accent);
+  border-radius: 7px; display: grid; place-items: center;
+  font-size: 14px; font-weight: 800; color: #000; flex-shrink: 0;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-links a {
+  padding: 6px 13px; border-radius: 6px;
+  color: var(--muted2); font-size: 13px; font-weight: 500;
+  text-decoration: none; transition: color .15s, background .15s;
+}
+.nav-links a:hover { color: var(--text); background: var(--surface2); }
+.nav-links .gh {
+  background: var(--surface); border: 1px solid var(--border2);
+  color: var(--text); display: flex; align-items: center; gap: 7px;
+}
+.nav-links .gh:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── HERO ─── */
+.hero {
+  padding: 80px 0 56px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center;
+}
+@media(max-width:740px) { .hero { grid-template-columns:1fr; gap:36px; padding:48px 0 36px; } }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 4px 12px; border-radius: 999px;
+  border: 1px solid var(--border2); background: var(--surface);
+  font-size: 11px; font-family: var(--mono);
+  color: var(--muted2); letter-spacing: .04em;
+  margin-bottom: 20px;
+}
+.pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: blink 2s ease-in-out infinite; flex-shrink:0; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:.25} }
+
+h1 {
+  font-size: clamp(34px, 4.8vw, 54px);
+  font-weight: 800; line-height: 1.05;
+  letter-spacing: -.03em; margin-bottom: 18px;
+}
+h1 em { font-style: normal; color: var(--accent); }
+
+.subtitle {
+  color: var(--muted2); font-family: var(--mono);
+  font-size: 12.5px; line-height: 1.8; margin-bottom: 30px;
+}
+
+.cta-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn {
+  padding: 10px 20px; border-radius: 8px;
+  font-size: 13px; font-weight: 700; font-family: var(--sans);
+  cursor: pointer; border: none; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: all .15s;
+}
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.btn-ghost { background: transparent; color: var(--muted2); border: 1px solid var(--border2); }
+.btn-ghost:hover { color: var(--text); background: var(--surface2); }
+
+/* preview card */
+.preview-card {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 14px; padding: 18px; overflow: hidden; position: relative;
+}
+.preview-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(184,255,87,.35), transparent);
+}
+.preview-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.dots { display: flex; gap: 6px; }
+.dots span { width: 9px; height: 9px; border-radius: 50%; background: var(--border2); }
+.preview-btns { display: flex; gap: 6px; }
+.ctrl {
+  padding: 4px 10px; border-radius: 5px; font-size: 11px;
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--muted2); cursor: pointer; font-family: var(--sans);
+  transition: all .15s;
+}
+.ctrl:hover { color: var(--accent); border-color: var(--accent); }
+#live-preview { width: 100%; display: block; border-radius: 6px; }
+
+/* ─── STATS ─── */
+.stats {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  border: 1px solid var(--border2); border-radius: var(--radius);
+  overflow: hidden; margin-bottom: 68px;
+}
+.stat { padding: 22px 24px; text-align: center; border-right: 1px solid var(--border2); }
+.stat:last-child { border-right: none; }
+.stat-n {
+  font-size: 30px; font-weight: 800; color: var(--accent);
+  letter-spacing: -.02em; line-height: 1; margin-bottom: 6px;
+}
+.stat-l { font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+@media(max-width:500px) {
+  .stats { grid-template-columns: 1fr; }
+  .stat { border-right: none; border-bottom: 1px solid var(--border2); }
+  .stat:last-child { border-bottom: none; }
+}
+
+/* ─── SECTION ─── */
+.section { margin-bottom: 68px; }
+.section-title {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+}
+.section-title h2 { font-size: 16px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; }
+.section-title .badge {
+  font-family: var(--mono); font-size: 10px; color: var(--muted);
+  letter-spacing: .08em; white-space: nowrap;
+}
+.divider { flex: 1; height: 1px; background: var(--border2); }
+
+/* ─── BUILDER ─── */
+.builder { display: grid; grid-template-columns: 300px 1fr; gap: 16px; }
+@media(max-width:768px) { .builder { grid-template-columns: 1fr; } }
+
+.builder-left {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--radius); padding: 18px;
+  display: flex; flex-direction: column; gap: 13px;
+}
+.fgroup label {
+  display: block; font-size: 10px; font-family: var(--mono);
+  color: var(--muted); letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.fgroup select, .fgroup input[type="text"], .fgroup input[type="number"] {
+  width: 100%; padding: 8px 11px;
+  background: var(--bg); border: 1px solid var(--border2);
+  color: var(--text); border-radius: 7px;
+  font-family: var(--mono); font-size: 12px;
+  outline: none; transition: border-color .15s;
+  appearance: none; -webkit-appearance: none;
+}
+.fgroup select:focus, .fgroup input:focus { border-color: var(--accent); }
+.fgroup select option { background: #111; }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.builder-right {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--radius); padding: 18px;
+  display: flex; flex-direction: column; gap: 13px;
+}
+#builder-img { width: 100%; border-radius: 6px; display: block; }
+
+.embed-box {
+  background: var(--bg); border: 1px solid var(--border2);
+  border-radius: 7px; padding: 13px;
+}
+.embed-lbl {
+  font-size: 10px; font-family: var(--mono); color: var(--muted);
+  letter-spacing: .1em; text-transform: uppercase; margin-bottom: 7px;
+}
+.embed-box pre {
+  font-family: var(--mono); font-size: 11.5px; color: var(--accent);
+  white-space: pre-wrap; word-break: break-all; line-height: 1.6;
+}
+.copy-btn {
+  margin-top: 9px; padding: 5px 12px;
+  background: transparent; border: 1px solid var(--border2);
+  border-radius: 5px; color: var(--muted2); font-size: 11px;
+  cursor: pointer; font-family: var(--sans); font-weight: 600;
+  transition: all .15s;
+}
+.copy-btn:hover, .copy-btn.copied { border-color: var(--accent); color: var(--accent); }
+
+.gen-btn {
+  width: 100%; padding: 10px; border-radius: 8px;
+  background: var(--accent); color: #000;
+  font-family: var(--sans); font-size: 13px; font-weight: 800;
+  border: none; cursor: pointer; transition: filter .15s, transform .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.gen-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+/* ─── THEMES GRID ─── */
+.themes-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(145px,1fr)); gap: 7px;
+}
+.theme-chip {
+  padding: 9px 12px; border-radius: 8px;
+  background: var(--surface); border: 1px solid var(--border2);
+  cursor: pointer; transition: all .15s;
+  font-size: 12px; font-family: var(--mono); font-weight: 400;
+  display: flex; align-items: center; gap: 8px; color: var(--muted2);
+}
+.theme-chip:hover { color: var(--text); transform: translateY(-1px); }
+.theme-chip.active { border-color: var(--accent); color: var(--accent); background: var(--accent-d); }
+.theme-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ─── ANIME BROWSER ─── */
+.search-box {
+  width: 100%; padding: 9px 13px; margin-bottom: 12px;
+  background: var(--surface); border: 1px solid var(--border2);
+  color: var(--text); border-radius: 8px;
+  font-family: var(--mono); font-size: 12px;
+  outline: none; transition: border-color .15s;
+}
+.search-box::placeholder { color: var(--muted); }
+.search-box:focus { border-color: var(--accent); }
+
+.anime-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(185px,1fr));
+  gap: 7px; max-height: 370px; overflow-y: auto;
+}
+.anime-grid::-webkit-scrollbar { width: 3px; }
+.anime-grid::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+.anime-grid::-webkit-scrollbar-track { background: transparent; }
+
+.anime-card {
+  padding: 11px 13px; border-radius: 8px;
+  background: var(--surface); border: 1px solid var(--border2);
+  cursor: pointer; transition: all .15s;
+}
+.anime-card:hover { border-color: var(--accent); background: var(--accent-d); }
+.anime-name { font-size: 12px; font-weight: 700; line-height: 1.4; margin-bottom: 4px; }
+.anime-count { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+/* ─── ENDPOINTS ─── */
+.endpoints { display: flex; flex-direction: column; gap: 5px; margin-bottom: 18px; }
+.endpoint {
+  display: flex; align-items: center; gap: 11px; padding: 10px 15px;
+  border-radius: 8px; background: var(--surface); border: 1px solid var(--border2);
+}
+.method {
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  padding: 2px 8px; border-radius: 4px;
+  background: var(--accent-d); color: var(--accent);
+  border: 1px solid rgba(184,255,87,.18); flex-shrink: 0; letter-spacing: .04em;
+}
+.ep-path { font-family: var(--mono); font-size: 12.5px; color: var(--text); }
+.ep-desc { font-size: 11.5px; color: var(--muted2); margin-left: auto; font-family: var(--mono); }
+@media(max-width:600px) { .endpoint { flex-wrap: wrap; } .ep-desc { margin-left: 0; } }
+
+/* ─── PARAMS TABLE ─── */
+.params-wrap {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--radius); overflow: hidden;
+}
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+thead tr { border-bottom: 1px solid var(--border2); }
+th {
+  text-align: left; padding: 9px 15px; color: var(--muted);
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; font-weight: 400;
+}
+td { padding: 9px 15px; border-bottom: 1px solid var(--border); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--surface2); }
+.pk { font-family: var(--mono); color: var(--accent); font-size: 12px; }
+.pd { font-family: var(--mono); color: var(--muted2); font-size: 12px; }
+.dc { color: var(--muted2); }
+
+/* ─── FOOTER ─── */
+footer {
+  border-top: 1px solid var(--border2); padding: 26px 0; margin-top: 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px;
+}
+footer p { font-size: 11.5px; color: var(--muted); font-family: var(--mono); }
+footer a { color: var(--muted2); text-decoration: none; }
+footer a:hover { color: var(--accent); }
+
+/* ─── TOAST ─── */
+#toast {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--surface); border: 1px solid var(--accent);
+  color: var(--accent); padding: 8px 15px; border-radius: 8px;
+  font-size: 11px; font-family: var(--mono);
+  transform: translateY(60px); opacity: 0;
+  transition: all .22s; pointer-events: none; z-index: 999;
+}
+#toast.show { transform: translateY(0); opacity: 1; }
+
+.spinner {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--border2); border-top-color: var(--accent);
+  animation: spin .6s linear infinite; margin: 24px auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <nav>
+    <a href="/" class="logo">
+      <div class="logo-mark">Q</div>
+      AnimeQuotes
+    </a>
+    <div class="nav-links">
+      <a href="#builder">Builder</a>
+      <a href="#browse">Browse</a>
+      <a href="#api">API</a>
+      <a href="https://github.com/bre4d777/anime-readme-quotes" target="_blank" class="gh">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <div class="pill"><span class="pill-dot"></span>GitHub README widget</div>
+      <h1>Anime quotes<br/>for your <em>profile.</em></h1>
+      <p class="subtitle">
+        Dynamic SVG cards that embed in any Markdown file.<br/>
+        Thousands of quotes, 22 themes, fully customizable.
+      </p>
+      <div class="cta-row">
+        <a href="#builder" class="btn btn-primary">Build your card →</a>
+        <a href="#api" class="btn btn-ghost">API docs</a>
+      </div>
+    </div>
+    <div class="preview-card">
+      <div class="preview-header">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="preview-btns">
+          <button class="ctrl" id="refresh-hero">↺ new quote</button>
+          <button class="ctrl" id="hero-theme-btn">◑ theme</button>
+        </div>
+      </div>
+      <img id="live-preview" src="/api" alt="Live quote card preview"/>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-n" id="stat-quotes">—</div>
+      <div class="stat-l">Quotes</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n" id="stat-anime">—</div>
+      <div class="stat-l">Anime</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n" id="stat-chars">—</div>
+      <div class="stat-l">Characters</div>
+    </div>
+  </div>
+
+  <section class="section" id="builder">
+    <div class="section-title">
+      <h2>Card Builder</h2>
+      <span class="badge">customize & embed</span>
+      <div class="divider"></div>
+    </div>
+    <div class="builder">
+      <div class="builder-left">
+        <div class="fgroup">
+          <label>Theme</label>
+          <select id="b-theme">
+            <option value="dark">dark</option>
+            <option value="light">light</option>
+            <option value="tokyo_night">tokyo_night</option>
+            <option value="dracula">dracula</option>
+            <option value="nord">nord</option>
+            <option value="gruvbox">gruvbox</option>
+            <option value="catppuccin">catppuccin</option>
+            <option value="rose_pine">rose_pine</option>
+            <option value="ayu">ayu</option>
+            <option value="monokai">monokai</option>
+            <option value="evangelion">evangelion</option>
+            <option value="mononoke">mononoke</option>
+            <option value="akira">akira</option>
+            <option value="sakura">sakura</option>
+            <option value="bleach">bleach</option>
+            <option value="cyberpunk">cyberpunk</option>
+            <option value="jujutsu">jujutsu</option>
+            <option value="aot">aot</option>
+            <option value="oshi_no_ko">oshi_no_ko</option>
+            <option value="spy_family">spy_family</option>
+            <option value="chainsaw_man">chainsaw_man</option>
+            <option value="transparent">transparent</option>
+          </select>
+        </div>
+        <div class="fgroup">
+          <label>Font</label>
+          <select id="b-font">
+            <option value="helvetica">helvetica</option>
+            <option value="georgia">georgia</option>
+            <option value="trebuchet_ms">trebuchet ms</option>
+            <option value="times_new_roman">times new roman</option>
+            <option value="garamond">garamond</option>
+            <option value="courier_new">courier new</option>
+            <option value="verdana">verdana</option>
+          </select>
+        </div>
+        <div class="fgroup">
+          <label>Filter by anime</label>
+          <input id="b-anime" type="text" placeholder="e.g. Cowboy Bebop"/>
+        </div>
+        <div class="fgroup">
+          <label>Filter by character</label>
+          <input id="b-character" type="text" placeholder="e.g. Spike, Pain"/>
+        </div>
+        <div class="frow">
+          <div class="fgroup">
+            <label>Border Radius</label>
+            <input id="b-radius" type="number" min="0" max="40" value="8"/>
+          </div>
+          <div class="fgroup">
+            <label>Border Width</label>
+            <input id="b-border" type="number" min="0" max="5" value="1"/>
+          </div>
+        </div>
+        <button class="gen-btn" id="b-generate">Generate card</button>
+      </div>
+
+      <div class="builder-right">
+        <img id="builder-img" src="/api" alt="Generated card"/>
+        <div class="embed-box">
+          <div class="embed-lbl">Markdown</div>
+          <pre id="embed-code">![Anime Quote](https://animequotes.uwuify.space/api)</pre>
+          <button class="copy-btn" id="copy-embed">Copy Markdown</button>
+        </div>
+        <div class="embed-box">
+          <div class="embed-lbl">HTML</div>
+          <pre id="embed-html">&lt;img src="https://animequotes.uwuify.space/api" alt="Anime Quote"/&gt;</pre>
+          <button class="copy-btn" id="copy-html">Copy HTML</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <h2>Themes</h2>
+      <span class="badge">22 available — click to preview</span>
+      <div class="divider"></div>
+    </div>
+    <div class="themes-grid" id="themes-grid"></div>
+  </section>
+
+  <section class="section" id="browse">
+    <div class="section-title">
+      <h2>Browse Anime</h2>
+      <span class="badge" id="anime-count">loading...</span>
+      <div class="divider"></div>
+    </div>
+    <input class="search-box" id="anime-search" placeholder="Search anime..."/>
+    <div class="anime-grid" id="anime-grid"><div class="spinner"></div></div>
+  </section>
+
+  <section class="section" id="api">
+    <div class="section-title">
+      <h2>API Reference</h2>
+      <span class="badge">REST endpoints</span>
+      <div class="divider"></div>
+    </div>
+    <div class="endpoints">
+      <div class="endpoint"><span class="method">GET</span><span class="ep-path">/api</span><span class="ep-desc">Random quote as SVG card</span></div>
+      <div class="endpoint"><span class="method">GET</span><span class="ep-path">/api?anime=Naruto</span><span class="ep-desc">Filter by anime name</span></div>
+      <div class="endpoint"><span class="method">GET</span><span class="ep-path">/api?character=Pain</span><span class="ep-desc">Filter by character</span></div>
+      <div class="endpoint"><span class="method">GET</span><span class="ep-path">/api?theme=evangelion&amp;font=georgia</span><span class="ep-desc">Theme &amp; font options</span></div>
+      <div class="endpoint"><span class="method">GET</span><span class="ep-path">/api/quote</span><span class="ep-desc">Random quote as JSON</span></div>
+      <div class="endpoint"><span class="method">GET</span><span class="ep-path">/api/anime</span><span class="ep-desc">All anime list as JSON</span></div>
+      <div class="endpoint"><span class="method">GET</span><span class="ep-path">/api/stats</span><span class="ep-desc">DB statistics as JSON</span></div>
+      <div class="endpoint"><span class="method">GET</span><span class="ep-path">/api/themes</span><span class="ep-desc">All theme names as JSON</span></div>
+    </div>
+    <div class="params-wrap">
+      <table>
+        <thead>
+          <tr><th>param</th><th>default</th><th>description</th></tr>
+        </thead>
+        <tbody id="params-table"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>Built by <a href="https://github.com/bre4d777" target="_blank">bre4d777</a> · Data from <a href="https://github.com/bre4d777/animeQuotes-offlineDB" target="_blank">animeQuotes-offlineDB</a></p>
+    <p>anime-quote-card</p>
+  </footer>
+</div>
+
+<div id="toast">Copied!</div>
+
+<script>
+const BASE = (location.origin && location.origin !== "null") ? location.origin : "";
+
+const THEMES_DATA = {
+  dark:         { label: "dark",         dot: "#58a6ff" },
+  light:        { label: "light",        dot: "#0969da" },
+  tokyo_night:  { label: "tokyo_night",  dot: "#7aa2f7" },
+  dracula:      { label: "dracula",      dot: "#bd93f9" },
+  nord:         { label: "nord",         dot: "#88c0d0" },
+  gruvbox:      { label: "gruvbox",      dot: "#fabd2f" },
+  catppuccin:   { label: "catppuccin",   dot: "#89b4fa" },
+  rose_pine:    { label: "rose_pine",    dot: "#9ccfd8" },
+  ayu:          { label: "ayu",          dot: "#39bae6" },
+  monokai:      { label: "monokai",      dot: "#a6e22e" },
+  evangelion:   { label: "evangelion",   dot: "#ff3333" },
+  mononoke:     { label: "mononoke",     dot: "#76c442" },
+  akira:        { label: "akira",        dot: "#00b4d8" },
+  sakura:       { label: "sakura",       dot: "#e8006a" },
+  bleach:       { label: "bleach",       dot: "#d4af37" },
+  cyberpunk:    { label: "cyberpunk",    dot: "#cc00ff" },
+  jujutsu:      { label: "jujutsu",      dot: "#9d7dff" },
+  aot:          { label: "aot",          dot: "#c8a050" },
+  oshi_no_ko:   { label: "oshi_no_ko",   dot: "#cc88ff" },
+  spy_family:   { label: "spy_family",   dot: "#5599ff" },
+  chainsaw_man: { label: "chainsaw_man", dot: "#ff3344" },
+  transparent:  { label: "transparent",  dot: "#444444" },
+};
+
+const PARAMS = [
+  ["theme",         "dark",      "Card color theme"],
+  ["font",          "helvetica", "Text font family"],
+  ["anime",         "—",         "Filter by anime name (fuzzy)"],
+  ["id",            "—",         "Filter by AniList ID"],
+  ["character",     "—",         "Filter by character name (fuzzy)"],
+  ["border_radius", "8",         "Corner radius 0–40"],
+  ["border_width",  "1",         "Border width 0–5"],
+  ["bg_color",      "—",         "Background hex (no #)"],
+  ["quote_color",   "—",         "Quote text hex"],
+  ["author_color",  "—",         "Character name hex"],
+  ["anime_color",   "—",         "Anime title hex"],
+  ["accent_color",  "—",         "Accent/glow hex"],
+  ["border_color",  "—",         "Border hex"],
+  ["quote",         "—",         "Custom quote text (spaces as +)"],
+  ["author",        "Anonymous", "Custom author (with quote param)"],
+  ["anime_name",    "—",         "Custom anime label (with quote param)"],
+];
+
+function toast(msg = "Copied!") {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 1800);
+}
+
+function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.cssText = "position:fixed;opacity:0;top:0;left:0;pointer-events:none";
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand("copy"); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+fetch("/api/stats").then(r => r.json()).then(d => {
+  document.getElementById("stat-quotes").textContent = d.totalQuotes?.toLocaleString() ?? "—";
+  document.getElementById("stat-anime").textContent  = d.totalAnime?.toLocaleString()  ?? "—";
+  document.getElementById("stat-chars").textContent  = d.totalCharacters?.toLocaleString() ?? "—";
+}).catch(() => {});
+
+const themesGrid = document.getElementById("themes-grid");
+let activeTheme = "dark";
+Object.entries(THEMES_DATA).forEach(([key, val]) => {
+  const chip = document.createElement("div");
+  chip.className = "theme-chip" + (key === "dark" ? " active" : "");
+  chip.dataset.theme = key;
+  chip.innerHTML = `<span class="theme-dot" style="background:${val.dot}"></span>${val.label}`;
+  chip.addEventListener("click", () => {
+    document.querySelectorAll(".theme-chip").forEach(c => c.classList.remove("active"));
+    chip.classList.add("active");
+    activeTheme = key;
+    document.getElementById("b-theme").value = key;
+    updateBuilder();
+  });
+  themesGrid.appendChild(chip);
+});
+
+let allAnime = [];
+fetch("/api/anime").then(r => r.json()).then(data => {
+  allAnime = data;
+  document.getElementById("anime-count").textContent = `${data.length} series`;
+  renderAnime(data);
+}).catch(() => {
+  document.getElementById("anime-grid").innerHTML =
+    '<p style="color:var(--muted);font-size:12px;font-family:var(--mono);padding:16px">Could not load anime list.</p>';
+});
+
+function renderAnime(list) {
+  const grid = document.getElementById("anime-grid");
+  grid.innerHTML = "";
+  list.slice(0, 200).forEach(a => {
+    const card = document.createElement("div");
+    card.className = "anime-card";
+    card.innerHTML = `<div class="anime-name">${a.name}</div><div class="anime-count">${a.count} quotes</div>`;
+    card.addEventListener("click", () => {
+      document.getElementById("b-anime").value = a.name;
+      document.querySelector("#builder").scrollIntoView({ behavior: "smooth" });
+      updateBuilder();
+    });
+    grid.appendChild(card);
+  });
+}
+
+document.getElementById("anime-search").addEventListener("input", e => {
+  const q = e.target.value.toLowerCase();
+  renderAnime(q ? allAnime.filter(a => a.name.toLowerCase().includes(q)) : allAnime);
+});
+
+const tbody = document.getElementById("params-table");
+PARAMS.forEach(([p, def, desc]) => {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td><span class="pk">${p}</span></td>
+    <td><span class="pd">${def}</span></td>
+    <td class="dc">${desc}</td>
+  `;
+  tbody.appendChild(tr);
+});
+
+function buildURL() {
+  const theme     = document.getElementById("b-theme").value;
+  const font      = document.getElementById("b-font").value;
+  const anime     = document.getElementById("b-anime").value.trim();
+  const character = document.getElementById("b-character").value.trim();
+  const radius    = document.getElementById("b-radius").value;
+  const border    = document.getElementById("b-border").value;
+  const params = new URLSearchParams();
+  if (theme !== "dark")      params.set("theme", theme);
+  if (font  !== "helvetica") params.set("font",  font);
+  if (anime)                 params.set("anime", anime);
+  if (character)             params.set("character", character);
+  if (radius !== "8")        params.set("border_radius", radius);
+  if (border !== "1")        params.set("border_width",  border);
+  const qs = params.toString();
+  return `${BASE}/api${qs ? "?" + qs : ""}`;
+}
+
+function updateBuilder() {
+  const url  = buildURL();
+  const bust = url + (url.includes("?") ? "&" : "?") + "_=" + Date.now();
+  document.getElementById("builder-img").src = bust;
+  document.getElementById("embed-code").textContent = `![Anime Quote](${url})`;
+  document.getElementById("embed-html").textContent = `<img src="${url}" alt="Anime Quote"/>`;
+  const t = document.getElementById("b-theme").value;
+  document.querySelectorAll(".theme-chip").forEach(c => c.classList.toggle("active", c.dataset.theme === t));
+}
+
+updateBuilder();
+
+document.getElementById("b-generate").addEventListener("click", updateBuilder);
+["b-theme","b-font"].forEach(id => document.getElementById(id).addEventListener("change", updateBuilder));
+
+document.getElementById("copy-embed").addEventListener("click", () => {
+  copyText(document.getElementById("embed-code").textContent);
+  const btn = document.getElementById("copy-embed");
+  btn.textContent = "Copied!"; btn.classList.add("copied");
+  toast();
+  setTimeout(() => { btn.textContent = "Copy Markdown"; btn.classList.remove("copied"); }, 2000);
+});
+
+document.getElementById("copy-html").addEventListener("click", () => {
+  copyText(document.getElementById("embed-html").textContent);
+  const btn = document.getElementById("copy-html");
+  btn.textContent = "Copied!"; btn.classList.add("copied");
+  toast("Copied HTML!");
+  setTimeout(() => { btn.textContent = "Copy HTML"; btn.classList.remove("copied"); }, 2000);
+});
+
+const heroKeys = Object.keys(THEMES_DATA);
+let heroIdx = 0;
+
+document.getElementById("refresh-hero").addEventListener("click", () => {
+  const theme = heroKeys[heroIdx];
+  document.getElementById("live-preview").src = `/api?theme=${theme}&_=` + Date.now();
+});
+
+document.getElementById("hero-theme-btn").addEventListener("click", () => {
+  heroIdx = (heroIdx + 1) % heroKeys.length;
+  document.getElementById("live-preview").src = `/api?theme=${heroKeys[heroIdx]}&_=` + Date.now();
+});
+</script>
+</body>
+</html>
